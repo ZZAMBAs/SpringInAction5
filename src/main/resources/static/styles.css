@@ -1,0 +1,32 @@
+@charset "UTF-8";
+/* At-rules(@-규칙): https://developer.mozilla.org/ko/docs/Web/CSS/At-rule */
+/* 선택자(Selector)에 대해: https://www.nextree.co.kr/p8468/ */
+div.ingredient-group:nth-child(odd){
+    float: left;
+    padding-right: 20px;
+}
+
+div.ingredient-group:nth-child(even){
+    float: left;
+    padding-right: 0;
+}
+
+div.ingredient-group{
+    width: 50%;
+}
+
+.grid:after{ /* 가상 요소: https://ordinary-code.tistory.com/141 */
+    content: "";
+    display: table;
+    clear: both; /* https://developer.mozilla.org/ko/docs/Web/CSS/clear */
+}
+
+*, *:after, *:before{
+    -webkit-box-sizing: border-box; /* chrome */
+    -moz-box-sizing: border-box; /* firefox */
+    box-sizing: border-box;
+}
+
+span.validationError{
+    color: red;
+}
