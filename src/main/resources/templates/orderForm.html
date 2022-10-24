@@ -21,7 +21,7 @@
   <h3>배송지 입력</h3>
 
   <label for="deliveryName">이름: </label>
-  <input type="text" th:field="*{deliveryName}" /> <!-- https://chb2005.tistory.com/82 -->
+  <input type="text" th:field="*{deliveryName}" /> <!-- th:field는 id, name도 함께 설정한다. https://chb2005.tistory.com/82 -->
   <span class="validationError"
         th:if="${#fields.hasErrors('deliveryName')}"
         th:errors="*{deliveryName}">Name Error</span>
