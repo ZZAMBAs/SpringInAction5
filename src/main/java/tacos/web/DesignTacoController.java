@@ -3,11 +3,14 @@ package tacos.web;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import tacos.Ingredient;
 import tacos.Taco;
+
+import javax.validation.Valid;
 
 import static tacos.Ingredient.Type;
 
@@ -49,8 +52,11 @@ public class DesignTacoController {
     }
 
     @PostMapping
-    public String processDesign(Taco design){ // form 태그로 넘겨받은 것들이 Taco 객체로 바인딩된다. @ModelAttribute가 생략되어 있다.
+    public String processDesign(@Valid Taco design, Errors errors){ // 유효성 검사를 통과했을 때만 바인딩된다. Errors는 에러 시 넘겨받는 객체.
         // https://heydoit.tistory.com/7,
+
+        if (errors.hasErrors())
+            return "design";
 
         // 이 지점에서 타코 디자인(선택된 식자재 내역)을 저장한다.
         // 3장에서 다룰 예정.
