@@ -9,12 +9,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import tacos.Ingredient;
 import tacos.Taco;
+import tacos.data.IngredientRepository;
 
 import javax.validation.Valid;
 
 import static tacos.Ingredient.Type;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,21 +23,17 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping("/design") // 이 클래스는 /design 에 대응한다.
 public class DesignTacoController {
+    private IngredientRepository ingredientRepo;
+
+    // @Autowired // 생성자가 1개일 시 생략 가능.
+    public DesignTacoController(IngredientRepository ingredientRepo) {
+        this.ingredientRepo = ingredientRepo;
+    }
 
     @GetMapping
     public String showDesignForm(Model model){ // 모델을 자동으로 받아오고 해당 모델을 뷰에 전송한다.
-        List<Ingredient> ingredients = Arrays.asList(
-                new Ingredient("FLTO", "Flour Tortilla", Type.WRAP),
-                new Ingredient("COTO", "Corn Tortilla", Type.WRAP),
-                new Ingredient("GRBF", "Ground Beef", Type.PROTEIN),
-                new Ingredient("CARN", "Carnitas", Type.PROTEIN),
-                new Ingredient("TMTO", "Diced Tomatoes", Type.VEGGIES),
-                new Ingredient("LETC", "Lettuce", Type.VEGGIES),
-                new Ingredient("CHED", "Cheddar", Type.CHEESE),
-                new Ingredient("JACK", "Monterrey Jack", Type.CHEESE),
-                new Ingredient("SLSA", "Salsa", Type.SAUCE),
-                new Ingredient("SRCR", "Sour Cream", Type.SAUCE)
-        ); // 임시 하드 코딩
+        List<Ingredient> ingredients = new ArrayList<>(); // List 인터페이스 메서드만 사용하기에 List로 받는다.
+        ingredientRepo.findAll().forEach(ingredient -> ingredients.add(ingredient));
 
         Type[] types = Type.values(); // 열거형 타입의 values()는 열거형 내 모든 값들을 배열로 리턴한다.
         for (Type type : types)
