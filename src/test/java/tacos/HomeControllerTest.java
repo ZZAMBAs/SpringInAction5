@@ -9,7 +9,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(controllers = HomeController.class) // HomeController의 웹 페이지 테스트임을 명시.
+@WebMvcTest
 // @WebMvcTest는 웹 컨트롤러 테스트 시에 사용한다. @SpringBootTest를 올리기엔 너무 무겁기 때문. 웹 컨트롤러 등과 관련된 빈만 올린다.
 // 스프링 부트에서 제공하는 애노테이션이며 스프링 MVC 형태로 테스트가 실행되도록 한다. 그리고 스프링 MVC 테스트를 위한 스프링 지원을 설정해준다.
 // Javadoc: https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/test/autoconfigure/web/servlet/WebMvcTest.html

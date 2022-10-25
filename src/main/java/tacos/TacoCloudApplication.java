@@ -4,6 +4,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 // 전체 예제 소스 코드: https://github.com/Jpub/SpringInAction5
+
+// 부트스트랩 클래스
 @SpringBootApplication
 public class TacoCloudApplication {
 
