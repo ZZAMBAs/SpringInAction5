@@ -6,7 +6,9 @@ import org.hibernate.validator.constraints.CreditCardNumber;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Data
 public class Order {
@@ -37,4 +39,9 @@ public class Order {
 
     @Digits(integer = 3, fraction = 0, message = "유효하지 않은 CVV") // integer는 최대 정수 자리 수, fraction은 최대 소수 자리 수를 의미
     private String ccCVV;
+
+    private List<Taco> tacos = new ArrayList<>();
+    public void addDesign(Taco design) {
+        this.tacos.add(design);
+    }
 }

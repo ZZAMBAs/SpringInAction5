@@ -4,12 +4,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import tacos.Ingredient;
+import tacos.Order;
 import tacos.Taco;
 import tacos.data.IngredientRepository;
+import tacos.data.TacoRepository;
 
 import javax.validation.Valid;
 
@@ -22,12 +22,15 @@ import java.util.stream.Collectors;
 @Slf4j // 로그 찍기 용.
 @Controller
 @RequestMapping("/design") // 이 클래스는 /design 에 대응한다.
+@SessionAttributes("order") // https://mindols.tistory.com/106
 public class DesignTacoController {
     private IngredientRepository ingredientRepo;
+    private TacoRepository tacoRepo;
 
     // @Autowired // 생성자가 1개일 시 생략 가능.
-    public DesignTacoController(IngredientRepository ingredientRepo) {
+    public DesignTacoController(IngredientRepository ingredientRepo, TacoRepository tacoRepo) {
         this.ingredientRepo = ingredientRepo;
+        this.tacoRepo = tacoRepo;
     }
 
     @GetMapping
@@ -48,16 +51,28 @@ public class DesignTacoController {
                 .collect(Collectors.toList());
     }
 
+    // 메서드 레벨의 @ModelAttribute는 해당 모델을 생성해준다.
+    // name 속성이 있으면 해당 name이 모델 키값으로, return 값이 값으로 들어간다. name 속성이 없으면 임의로 키값을 생성한다.
+    // @SessionAttributes로 지정된 모델은 세션에서 주입한다. 위 @SessionAttribute 참조
+    @ModelAttribute(name = "order") // https://ncucu.me/52
+    public Order order(){
+        return new Order();
+    }
+
+    @ModelAttribute(name = "taco")
+    public Taco taco(){
+        return new Taco();
+    }
+
     @PostMapping
-    public String processDesign(@Valid Taco design, Errors errors){ // 유효성 검사를 통과했을 때만 바인딩된다. Errors는 에러 시 넘겨받는 객체.
+    public String processDesign(@Valid Taco design, Errors errors, @ModelAttribute Order order){
         // https://heydoit.tistory.com/7,
 
         if (errors.hasErrors())
             return "design";
 
-        // 이 지점에서 타코 디자인(선택된 식자재 내역)을 저장한다.
-        // 3장에서 다룰 예정.
-        log.info("다음 디자인 처리중: " + design); // Slf4j 기능으로 로그를 남긴다.
+        Taco saved = tacoRepo.save(design);
+        order.addDesign(saved);
 
         return "redirect:/orders/current"; // PRG 패턴: https://programmer93.tistory.com/76
     }
