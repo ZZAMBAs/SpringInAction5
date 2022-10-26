@@ -29,7 +29,7 @@ dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools' // https://yoons2owo.tistory.com/23
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    runtimeOnly 'com.h2database:h2-mvstore:1.4.196' // 책에 나온 버전을 이용하였음.
+    runtimeOnly 'com.h2database:h2:1.4.196' // 책에 나온 버전을 이용하였음.
 }
 
 tasks.named('test') {
