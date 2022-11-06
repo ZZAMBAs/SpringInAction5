@@ -1,43 +1,54 @@
 package tacos.security;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 // import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 // Deprecated. https://devlog-wjdrbs96.tistory.com/434, https://spring.io/blog/2022/02/21/spring-security-without-the-websecurityconfigureradapter
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+
+import javax.sql.DataSource;
 
 // 스프링 시큐리티 기본 구성 클래스
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+    @Autowired
+    private DataSource dataSource;
+
+    @Autowired
+    private UserDetailsService userDetailsService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .authorizeRequests()
+                .authorizeRequests() // ExpressionInterceptUrlRegistry 객체 반환. 이 객체를 사용해 URL 경로와 패턴 및 해당 경로 보안 요구사항 구성 가능.
                 .antMatchers("/design", "/orders")
                 .access("hasRole('ROLE_USER')")
-                .antMatchers("/", "/**").access("permitAll")
+                .antMatchers("/", "/**").permitAll() // /design, /orders 요청은 ROLE_USER 권한을 갖는 사용자에게만 허용하고 이외 모든 요청은 모든 사용자에게 허용.
+                // https://velog.io/@ha0kim/%EC%8A%A4%ED%94%84%EB%A7%81-%EC%9D%B8-%EC%95%A1%EC%85%98-4.-%EC%8A%A4%ED%94%84%EB%A7%81-%EC%8B%9C%ED%81%90%EB%A6%AC%ED%8B%B0 의 4.3.1 참조
+                .and() // 앞 인증 구성 코드와 연결시킨다는 의미의 메서드
+                .formLogin() // 커스텀 로그인 폼을 위해 호출.
+                .loginPage("/login") // 커스텀 로그인 페이지 경로 지정.
+        // 일반적으로 스프링 시큐리티는 로그인하면 해당 사용자의 로그인이 필요하다 판단한 당시에 사용자가 머물던 페이지로 바로 이동한다.
+        // 그러나 사용자가 직접 로그인 페이지로 이동했을 경우, 로그인한 후에는 루트 경로로 이동한다.
+        // 하지만 로그인 한 후 이동할 페이지를 .defaultSuccessUrl() 메서드로 바꿀 수 있다. 이 메서드의 두번째 인자로 true를 전달하면 로그인 후 무조건 첫 파라미터 페이지로 이동한다.
                 .and()
-                .httpBasic();
+                .logout()
+                .logoutSuccessUrl("/") // 로그아웃 성공 시 이동할 페이지
+                .and()
+                .csrf(); // CSRF 공격 방지
         return http.build();
     }
 
-    // 인메모리(내장) 사용자 스토어를 이용함. 그러나 테스트 용으로는 좋아도 사용자 정보 추가/변경 시 애플리케이션 재시작이 필수여서 권장 X
-    // 사용자 스토어는 한 명 이상의 사용자를 처리할 수 있도록 사용자 정보를 유지/관리하는 저장소를 말한다.
+    // 기본 암호화 방식은 BCrypt 이므로, NoEncodingPasswordEncoder로 임시로 바꾼다.
     @Bean
-    public InMemoryUserDetailsManager userDetailsService(){
-        InMemoryUserDetailsManager inMemoryUserDetailsManager = new InMemoryUserDetailsManager();
-        inMemoryUserDetailsManager.createUser(User.withUsername("user1")
-                .password("{noop}password1") // {noop}은 인코딩 하지 않음(암호 처리 하지 않음)을 의미한다. https://w-giraffe.tistory.com/111?category=936508
-                .authorities("ROLE_USER").build());
-        inMemoryUserDetailsManager.createUser(User.withUsername("user2")
-                .password("{noop}password2")
-                .authorities("ROLE_USER").build());
-        return inMemoryUserDetailsManager;
+    public PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder();
     }
 }

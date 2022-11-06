@@ -8,13 +8,16 @@ import org.springframework.web.bind.annotation.*;
 import tacos.Ingredient;
 import tacos.Order;
 import tacos.Taco;
+import tacos.User;
 import tacos.data.IngredientRepository;
 import tacos.data.TacoRepository;
+import tacos.data.UserRepository;
 
 import javax.validation.Valid;
 
 import static tacos.Ingredient.Type;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,22 +29,27 @@ import java.util.stream.Collectors;
 public class DesignTacoController {
     private IngredientRepository ingredientRepo;
     private TacoRepository tacoRepo;
+    private UserRepository userRepo;
 
     // @Autowired // 생성자가 1개일 시 생략 가능.
-    public DesignTacoController(IngredientRepository ingredientRepo, TacoRepository tacoRepo) {
+    public DesignTacoController(IngredientRepository ingredientRepo, TacoRepository tacoRepo, UserRepository userRepo) {
         this.ingredientRepo = ingredientRepo;
         this.tacoRepo = tacoRepo;
+        this.userRepo = userRepo;
     }
 
     @GetMapping
-    public String showDesignForm(Model model){ // 모델을 자동으로 받아오고 해당 모델을 뷰에 전송한다.
+    public String showDesignForm(Model model, Principal principal){
         List<Ingredient> ingredients = new ArrayList<>(); // List 인터페이스 메서드만 사용하기에 List로 받는다.
         ingredientRepo.findAll().forEach(ingredient -> ingredients.add(ingredient));
 
         Type[] types = Type.values(); // 열거형 타입의 values()는 열거형 내 모든 값들을 배열로 리턴한다.
         for (Type type : types)
             model.addAttribute(type.toString().toLowerCase(), filterByType(ingredients, type));
-        model.addAttribute("taco", new Taco());
+
+        String username = principal.getName();
+        User user = userRepo.findByUsername(username);
+        model.addAttribute("user", user);
 
         return "design";
     }

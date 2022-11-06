@@ -25,6 +25,9 @@ public class Order implements Serializable {
 
     private Date placedAt;
 
+    @ManyToOne // https://soojong.tistory.com/entry/JPA-ManyToOne-OneToMany-%EC%9D%B4%ED%95%B4%ED%95%98%EA%B8%B0
+    private User user;
+
     @NotBlank(message = "필수 항목입니다.") // @NotNull, @NotEmpty, @NotBlank의 차이: https://sanghye.tistory.com/36
     private String deliveryName;
 

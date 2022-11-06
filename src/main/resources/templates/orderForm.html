@@ -8,11 +8,18 @@
 </head>
 <body>
 
-<form method="POST" th:action="@{/orders}" th:object="${order}">
+  <form method="post" th:action="@{/logout}" id="logoutForm">
+    <input type="submit" value="Logout">
+  </form>
+
+<form method="POST" th:action="@{/orders}" th:object="${order}" id="orderForm">
   <h1>당신의 타코를 주문하세요!</h1>
 
-  <img th:src="@{/images/TacoCloud.png}" /> <a th:href="@{/design}"
-                                               id="another">또다른 타코 디자인하기</a><br />
+  <img th:src="@{/images/TacoCloud.png}" />
+
+  <h3>주문 중인 타코:</h3>
+
+  <a th:href="@{/design}" id="another">또다른 타코 디자인하기</a><br />
 
   <ul>
     <li th:each="taco : ${order.tacos}">

@@ -10,6 +10,7 @@ public class WebConfig implements WebMvcConfigurer { // https://mangkyu.tistory.
     @Override
     public void addViewControllers(ViewControllerRegistry registry) { // https://1-7171771.tistory.com/81
         // https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/servlet/config/annotation/ViewControllerRegistry.html
-        registry.addViewController("/").setViewName("home"); // 기존의 HomeController 대체
+        registry.addViewController("/").setViewName("home");
+        registry.addViewController("/login");
     }
 }
