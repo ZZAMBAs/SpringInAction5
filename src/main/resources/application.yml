@@ -9,4 +9,4 @@ spring:
       enabled: true
 taco:
   orders:
-    pageSize: 10
+    page-size: 10

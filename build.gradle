@@ -30,6 +30,7 @@ dependencies {
     implementation 'org.springframework.ldap:spring-ldap-core'
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-configuration-processor' // https://m.blog.naver.com/PostView.naver?isHttpsRedirect=true&blogId=vefe&logNo=222065703815
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools' // https://yoons2owo.tistory.com/23
     annotationProcessor 'org.projectlombok:lombok'
