@@ -4,6 +4,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 import tacos.data.IngredientRepository;
 
 import static tacos.Ingredient.Type;
@@ -21,6 +22,8 @@ public class TacoCloudApplication {
     // 스프링 부트 서버 구동 시점에 실행되는 메서드. https://coding-start.tistory.com/118
     // 미리 아래 데이터를 Repository에 저장하도록 함.
     @Bean
+    //@Profile("!prod") // 특정 프로파일에서만 빈을 적용하고 싶을 때 사용. https://dbjh.tistory.com/31
+    // 위 예시는 prod 외의 프로파일에서 빈을 적용한다는 뜻. 또한 @Profile은 클래스 레벨에서도 사용 가능하다.
     public CommandLineRunner dataLoader(IngredientRepository repo){
         return new CommandLineRunner() {
             @Override
