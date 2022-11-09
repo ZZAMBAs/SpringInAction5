@@ -25,6 +25,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     testImplementation 'org.springframework.security:spring-security-test'
     implementation 'org.springframework.boot:spring-boot-starter-validation' // 유효성 검사
+    implementation 'org.springframework.boot:spring-boot-starter-hateoas' // EntityLinks
     implementation 'org.springframework.security:spring-security-ldap'
     implementation 'org.springframework.data:spring-data-ldap'
     implementation 'org.springframework.ldap:spring-ldap-core'

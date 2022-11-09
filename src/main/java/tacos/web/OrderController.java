@@ -51,6 +51,7 @@ public class OrderController {
     @GetMapping
     public String ordersForUser(@AuthenticationPrincipal User user, Model model){
         Pageable pageable = PageRequest.of(0, props.getPageSize());
+        // Pageable은 페이지 처리 정보를 받는 인터페이스, PageRequest는 Pageable의 기본 구현 클래스이다.
         model.addAttribute("orders",
                 orderRepo.findByUserOrderByPlacedAtDesc(user, pageable));
 
