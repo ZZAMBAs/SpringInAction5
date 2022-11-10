@@ -44,4 +44,11 @@ public class DesignTacoController {
             return new ResponseEntity<>(optTaco.get(), HttpStatus.OK);
         return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     } // 단순히 Taco 타입으로 반환하지 않고 ResponseEntity 타입으로 반환하는 이유는 id로 타코가 검색되지 않았을 경우, null이 반환되는데 이때도 200 코드가 날아가기 때문임.
+
+    @PostMapping(consumes = "application/json") // JSON 타입 요청만 처리한다.
+    @ResponseStatus(HttpStatus.CREATED) // 응답 상태 코드 반환 애노테이션.
+    public Taco postTaco(@RequestBody Taco taco){ // @RequestBody와 @ModelAttribute: https://tecoble.techcourse.co.kr/post/2021-05-11-requestbody-modelattribute/
+        // HttpMessageConverter: https://itvillage.tistory.com/46, https://velog.io/@woo00oo/HTTP-%EB%A9%94%EC%8B%9C%EC%A7%80-%EC%BB%A8%EB%B2%84%ED%84%B0
+        return tacoRepo.save(taco);
+    }
 }
