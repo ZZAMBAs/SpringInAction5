@@ -1,15 +1,17 @@
 package tacos.web.api;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.hateoas.server.EntityLinks;
+import org.springframework.hateoas.CollectionModel;
+import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tacos.Taco;
 import tacos.data.TacoRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController // @Controller + @ResponseBody. @RestController: https://mangkyu.tistory.com/49
@@ -19,18 +21,29 @@ public class DesignTacoController {
     private TacoRepository tacoRepo;
 
     // HATEOAS: https://joomn11.tistory.com/26, https://brunch.co.kr/@purpledev/29(스프링부트 2.2 이후 변경된 클래스 이름 포함)
-    @Autowired
-    EntityLinks entityLinks;
+    /*@Autowired
+    EntityLinks entityLinks;*/
 
     public DesignTacoController(TacoRepository tacoRepo) {
         this.tacoRepo = tacoRepo;
     }
 
     @GetMapping("/recent")
-    public Iterable<Taco> recentTacos(){
+    public CollectionModel<EntityModel<Taco>> recentTacos(){
         PageRequest page = PageRequest.of(0, 12, Sort.by("createdAt").descending());
         // 3번째 파라미터에 Sort 함수를 넣으면 데이터를 정렬해주고 그 정렬 값들에서 페이징한다.
-        return tacoRepo.findAll(page).getContent();
+        List<Taco> tacos = tacoRepo.findAll(page).getContent();
+        CollectionModel<EntityModel<Taco>> recentCollection = CollectionModel.wrap(tacos);
+
+        recentCollection.add(
+                //Link.of("https://localhost:8080/design/recent", "recents")); // URI 하드코딩은 절대하면 안된다.
+                /*WebMvcLinkBuilder.linkTo(DesignTacoController.class) // DesignTacoController에 기본 경로가 /design인 링크를 요청.
+                        .slash("recent") // "위에서 받은 주소/(값)"
+                        .withRel("recents") // rel(관계 이름) 값 명시.*/
+                WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(DesignTacoController.class).recentTacos())
+                        .withRel("recents")); // 하드코딩 최소화. methodOn으로 해당 클래스를 리플렉션으로 받고, 메서드를 호출해 경로를 모두 알 수 있음.
+
+        return recentCollection;
     }
 
     @GetMapping("/{id}") // {} 내 변수를 플레이스홀더 변수라고 한다.
@@ -51,4 +64,6 @@ public class DesignTacoController {
         // HttpMessageConverter: https://itvillage.tistory.com/46, https://velog.io/@woo00oo/HTTP-%EB%A9%94%EC%8B%9C%EC%A7%80-%EC%BB%A8%EB%B2%84%ED%84%B0
         return tacoRepo.save(taco);
     }
+
+    // 그 외, 부분 변경은 @PatchMapping, 전체 변경은 @PutMapping, 삭제는 @DeleteMapping 등의 방식이 존재함.
 }
