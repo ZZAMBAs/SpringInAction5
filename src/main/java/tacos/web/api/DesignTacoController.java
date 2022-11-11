@@ -3,7 +3,6 @@ package tacos.web.api;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.hateoas.CollectionModel;
-import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.mvc.WebMvcLinkBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +19,15 @@ import java.util.Optional;
 public class DesignTacoController {
     private TacoRepository tacoRepo;
 
-    // HATEOAS: https://joomn11.tistory.com/26, https://brunch.co.kr/@purpledev/29(스프링부트 2.2 이후 변경된 클래스 이름 포함)
+    // HATEOAS: https://joomn11.tistory.com/26, https://brunch.co.kr/@purpledev/29
+    // 스프링 2.20 이후 변경된 이름들
+    // ResourceSupport -> RepresentationModel
+    // Resource -> EntityModel
+    // Resources -> CollectionModel
+    // PagedResources -> PagedModel
+    // ResourceAssembler -> RepresentationModelAssembler
+    // ControllerLinkBuilder -> WebMvcLinkBuilder
+
     /*@Autowired
     EntityLinks entityLinks;*/
 
@@ -29,13 +36,14 @@ public class DesignTacoController {
     }
 
     @GetMapping("/recent")
-    public CollectionModel<EntityModel<Taco>> recentTacos(){
+    public CollectionModel<TacoResource> recentTacos(){
         PageRequest page = PageRequest.of(0, 12, Sort.by("createdAt").descending());
         // 3번째 파라미터에 Sort 함수를 넣으면 데이터를 정렬해주고 그 정렬 값들에서 페이징한다.
         List<Taco> tacos = tacoRepo.findAll(page).getContent();
-        CollectionModel<EntityModel<Taco>> recentCollection = CollectionModel.wrap(tacos);
 
-        recentCollection.add(
+        CollectionModel<TacoResource> recentResources = new TacoResourceAssembler().toCollectionModel(tacos);
+
+        recentResources.add(
                 //Link.of("https://localhost:8080/design/recent", "recents")); // URI 하드코딩은 절대하면 안된다.
                 /*WebMvcLinkBuilder.linkTo(DesignTacoController.class) // DesignTacoController에 기본 경로가 /design인 링크를 요청.
                         .slash("recent") // "위에서 받은 주소/(값)"
@@ -43,7 +51,7 @@ public class DesignTacoController {
                 WebMvcLinkBuilder.linkTo(WebMvcLinkBuilder.methodOn(DesignTacoController.class).recentTacos())
                         .withRel("recents")); // 하드코딩 최소화. methodOn으로 해당 클래스를 리플렉션으로 받고, 메서드를 호출해 경로를 모두 알 수 있음.
 
-        return recentCollection;
+        return recentResources;
     }
 
     @GetMapping("/{id}") // {} 내 변수를 플레이스홀더 변수라고 한다.
